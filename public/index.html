@@ -3,12 +3,41 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Shift App</title>
+    <title>シフト提出</title>
 </head>
 
 <body>
-    <h1>Shift App</h1>
-    <p>Render deployed successfully.</p>
+
+    <h1>シフト提出</h1>
+
+    <label>日付</label><br>
+    <input type="date" id="date"><br><br>
+
+    <label>開始時間</label><br>
+    <input type="time" id="start"><br><br>
+
+    <label>終了時間</label><br>
+    <input type="time" id="end"><br><br>
+
+    <button onclick="submitShift()">
+        送信
+    </button>
+
+    <script>
+        async function submitShift() {
+
+            const data = {
+                date: document.getElementById("date").value,
+                start: document.getElementById("start").value,
+                end: document.getElementById("end").value
+            };
+
+            console.log(data);
+
+            alert("送信テスト");
+        }
+    </script>
+
 </body>
 
 </html>
