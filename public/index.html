@@ -10,13 +10,12 @@
 
     <h1>シフト提出</h1>
 
-    <label>日付</label><br>
+    <input type="text" id="name" placeholder="名前"><br><br>
+
     <input type="date" id="date"><br><br>
 
-    <label>開始時間</label><br>
     <input type="time" id="start"><br><br>
 
-    <label>終了時間</label><br>
     <input type="time" id="end"><br><br>
 
     <button onclick="submitShift()">
@@ -27,14 +26,21 @@
         async function submitShift() {
 
             const data = {
+                name: document.getElementById("name").value,
                 date: document.getElementById("date").value,
                 start: document.getElementById("start").value,
                 end: document.getElementById("end").value
             };
 
-            console.log(data);
+            const response = await fetch("/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
 
-            alert("送信テスト");
+            alert("送信しました");
         }
     </script>
 

@@ -15,5 +15,14 @@ app.listen(process.env.PORT || 3000, () => {
     console.log("Start");
 });
 
-console.log(process.env.KINTONE_DOMAIN);
-console.log(process.env.KINTONE_APP_ID);
+app.post("/submit", (req, res) => {
+
+    console.log("受信");
+
+    console.log(req.body);
+
+    res.json({
+        success: true
+    });
+
+});
