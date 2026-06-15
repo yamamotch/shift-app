@@ -1,49 +1,44 @@
 <!DOCTYPE html>
 <html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>シフト提出</title>
+	</head>
 
-<head>
-    <meta charset="UTF-8">
-    <title>シフト提出</title>
-</head>
+	<body>
+		<h1>シフト提出</h1>
 
-<body>
+		<input type="text" id="name" placeholder="名前" /><br /><br />
 
-    <h1>シフト提出</h1>
+		<input type="date" id="date" /><br /><br />
 
-    <input type="text" id="name" placeholder="名前"><br><br>
+		<input type="time" id="start" /><br /><br />
 
-    <input type="date" id="date"><br><br>
+		<input type="time" id="end" /><br /><br />
 
-    <input type="time" id="start"><br><br>
+		<button onclick="submitShift()">送信</button>
 
-    <input type="time" id="end"><br><br>
+		<script>
+			async function submitShift() {
+				const data = {
+					name: document.getElementById("name").value,
+					date: document.getElementById("date").value,
+					start: document.getElementById("start").value,
+					end: document.getElementById("end").value,
+				};
 
-    <button onclick="submitShift()">
-        送信
-    </button>
+				const response = await fetch("/submit", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(data),
+				});
 
-    <script>
-        async function submitShift() {
-
-            const data = {
-                name: document.getElementById("name").value,
-                date: document.getElementById("date").value,
-                start: document.getElementById("start").value,
-                end: document.getElementById("end").value
-            };
-
-            const response = await fetch("/submit", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            });
-
-            alert("送信しました");
-        }
-    </script>
-
-</body>
-
+				alert("送信しました");
+			}
+		</script>
+	</body>
 </html>
+
+//y
