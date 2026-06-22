@@ -1,100 +1,203 @@
 <!DOCTYPE html>
 <html lang="ja">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>シフト提出</title>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+		<style>
+			body {
+				font-family: sans-serif;
+				max-width: 700px;
+				margin: 20px auto;
+				padding: 10px;
+			}
 
-    <title>シフト提出</title>
+			table {
+				width: 100%;
+				border-collapse: collapse;
+			}
 
-    <style>
-        body {
-            font-family: sans-serif;
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+			th,
+			td {
+				border: 1px solid #ccc;
+				padding: 8px;
+				text-align: center;
+			}
 
-        h1 {
-            text-align: center;
-        }
+			input[type="time"] {
+				width: 100px;
+			}
 
-        input {
-            width: 100%;
-            height: 50px;
-            font-size: 18px;
-            margin-bottom: 15px;
-        }
+			button {
+				margin-top: 15px;
+				padding: 10px 20px;
+			}
+		</style>
+	</head>
 
-        button {
-            width: 100%;
-            height: 60px;
-            font-size: 20px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-        }
+	<body>
+		<h1>シフト提出</h1>
 
-        .success {
-            text-align: center;
-            margin-top: 10px;
-        }
-    </style>
-</head>
+		<input type="text" id="name" placeholder="名前" />
 
-<body>
+		<br /><br />
 
-    <h1>シフト提出</h1>
+		<table>
+			<thead>
+				<tr>
+					<th>日付</th>
+					<th>出勤</th>
+					<th>開始</th>
+					<th>終了</th>
+				</tr>
+			</thead>
 
-    <input type="text" id="name" placeholder="名前">
+			<tbody id="shiftTable"></tbody>
+		</table>
 
-    <input type="date" id="date">
+		<button onclick="submitShift()">送信</button>
 
-    <input type="time" id="start">
+		<script>
+			const tbody = document.getElementById("shiftTable");
 
-    <input type="time" id="end">
+			//今日の日付
+			const today = new Date();
 
-    <button onclick="submitShift()">送信</button>
+			//来週の月曜日
+			//getDay()曜日を数字で返す　日0～土6
+			//while 月曜になるまで1日ずつ足す
+			let nextMonday = new Date(today);
 
-    <div id="result" class="success"></div>
+			while (nextMonday.getDay() !== 1) {
+				nextMonday.setDate(nextMonday.getDate() + 1);
+			}
 
-    <script>
+			nextMonday.setDate(nextMonday.getDate() + 7);
 
-        async function main() {
+			const weekNames = ["日", "月", "火", "水", "木", "金", "土"];
 
-            await liff.init({
-                liffId: "2010464408-Tw5WEQl9"
-            });
+			for (let i = 0; i < 7; i++) {
+				let d = new Date(nextMonday);
 
-            if (!liff.isLoggedIn()) {
-                liff.login();
-            }
-        }
+				d.setDate(nextMonday.getDate() + i);
 
-        main();
-        async function submitShift() {
+				let yyyy = d.getFullYear();
 
-            const data = {
-                name: document.getElementById("name").value,
-                date: document.getElementById("date").value,
-                start: document.getElementById("start").value,
-                end: document.getElementById("end").value
-            };
+				let mm = String(d.getMonth() + 1).padStart(2, "0");
 
-            const response = await fetch("/submit", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            });
+				let dd = String(d.getDate()).padStart(2, "0");
 
-            document.getElementById("result").innerHTML =
-                "✅ 提出しました";
-        }
-    </script>
+				let dateStr = `${yyyy}-${mm}-${dd}`;
 
-</body>
+				tbody.innerHTML += `
+                <tr>
+                    <td>
+                        ${mm}/${dd}(${weekNames[d.getDay()]})
+                    </td>
 
+                    <td>
+                        <input
+                            type="checkbox"
+                            id="work${i}"
+                            onchange="toggleTime(${i})">
+                    </td>
+
+                    <td>
+                        <input
+                            type="time"
+                            id="start${i}"
+                            disabled>
+                    </td>
+
+                    <td>
+                        <input
+                            type="time"
+                            id="end${i}"
+                            disabled>
+                    </td>
+
+                    <input
+                        type="hidden"
+                        id="date${i}"
+                        value="${dateStr}">
+                </tr>
+            `;
+			}
+			//チェックボックスが押されたとき
+			function toggleTime(index) {
+				const checked = document.getElementById(`work${index}`).checked;
+
+				document.getElementById(`start${index}`).disabled = !checked;
+
+				document.getElementById(`end${index}`).disabled = !checked;
+
+				if (!checked) {
+					document.getElementById(`start${index}`).value = "";
+
+					document.getElementById(`end${index}`).value = "";
+				}
+			}
+
+			async function submitShift() {
+				const shifts = [];
+
+				for (let i = 0; i < 7; i++) {
+					if (!document.getElementById(`work${i}`).checked) {
+						continue;
+					}
+
+					shifts.push({
+						date: document.getElementById(`date${i}`).value,
+
+						start: document.getElementById(`start${i}`).value,
+
+						end: document.getElementById(`end${i}`).value,
+					});
+				}
+
+				const data = {
+					name: document.getElementById("name").value,
+
+					shifts: shifts,
+				};
+				//json構造
+				//                 {
+				//   name:"田中",
+
+				//   shifts:[
+				//     {
+				//       date:"2026-08-03",
+				//       start:"09:00",
+				//       end:"17:00"
+				//     }
+				//   ]
+				// }
+
+				console.log(data);
+
+				try {
+					const response = await fetch("/submit", {
+						method: "POST",
+
+						headers: {
+							"Content-Type": "application/json",
+						},
+
+						body: JSON.stringify(data),
+					});
+
+					if (response.ok) {
+						alert("送信しました");
+					} else {
+						alert("送信に失敗しました");
+					}
+				} catch (error) {
+					console.error(error);
+
+					alert("通信エラーが発生しました");
+				}
+			}
+		</script>
+	</body>
 </html>
