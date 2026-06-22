@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
     <title>シフト提出</title>
 
@@ -59,6 +60,19 @@
     <div id="result" class="success"></div>
 
     <script>
+
+        async function main() {
+
+            await liff.init({
+                liffId: "2010464408-Tw5WEQl9"
+            });
+
+            if (!liff.isLoggedIn()) {
+                liff.login();
+            }
+        }
+
+        main();
         async function submitShift() {
 
             const data = {
