@@ -24,11 +24,15 @@ app.post("/submit", async (req, res) => {
     try {
         // フロントエンドの配列を、kintoneの複数一括登録（records.json）用のデータ構造にマッピング
         const records = shifts.map(shift => {
+
+            const startDateTime = `${shift.date}T${shift.start}:00+09:00`;
+            const endDateTime = `${shift.date}T${shift.end}:00+09:00`;
+
             return {
                 name: { value: name },
                 date: { value: shift.date },
-                start: { value: shift.start },
-                end: { value: shift.end }
+                start: { value: startDateTime },
+                end: { value: endDateTime }
             };
         });
 
