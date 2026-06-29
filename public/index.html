@@ -66,6 +66,8 @@
 
             const select = document.getElementById("name");
 
+            select.innerHTML = `<option value="" selected disabled hidden>選択してください</option>`;
+
             options.forEach(option => {
                 const element = document.createElement("option");
                 element.value = option;
