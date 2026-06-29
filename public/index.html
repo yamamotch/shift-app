@@ -40,7 +40,7 @@
 <body>
     <h1>シフト提出</h1>
 
-    <input type="text" id="name" placeholder="名前" />
+    <select id="name"></select>
 
     <br /><br />
 
@@ -60,6 +60,21 @@
     <button onclick="submitShift()">送信</button>
 
     <script>
+        async function loadNames() {
+            const res = await fetch("/names/name");
+            const options = await res.json();
+
+            const select = document.getElementById("name");
+
+            options.forEach(option => {
+                const element = document.createElement("option");
+                element.value = option;
+                element.textContent = option;
+                select.appendChild(element);
+            });
+        }
+
+        loadOptions();
         const tbody = document.getElementById("shiftTable");
 
         //今日の日付

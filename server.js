@@ -10,14 +10,42 @@ app.get("/", (req, res) => {
     res.send("Server Running");
 });
 
+app.get("/options/:fieldCode", async (req, res) => {
+    const fieldCode = req.params.fieldCode;
+
+    try {
+        const response = await axios.get(
+            `https://${process.env.KINTONE_DOMAIN}/k/v1/app/form/fields.json`,
+            {
+                params: {
+                    app: process.env.KINTONE_APP_ID
+                },
+                headers: {
+                    "X-Cybozu-API-Token": process.env.KINTONE_API_TOKEN
+                }
+            }
+        );
+
+        const field = response.data.properties[fieldCode];
+
+        const options = Object.keys(field.options);
+
+        res.json(options);
+
+    } catch (error) {
+        console.log(error.response?.data || error.message);
+        res.status(500).json({ success: false });
+    }
+});
+
 app.post("/submit", async (req, res) => {
     const { name, shifts } = req.body;
 
     // バリデーション: シフトデータが空、または配列ではない場合
     if (!shifts || !Array.isArray(shifts) || shifts.length === 0) {
-        return res.status(400).json({ 
-            success: false, 
-            message: "送信されたシフトデータが空、または不正です。" 
+        return res.status(400).json({
+            success: false,
+            message: "送信されたシフトデータが空、または不正です。"
         });
     }
 
