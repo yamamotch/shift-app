@@ -61,7 +61,7 @@
 
     <script>
         async function loadNames() {
-            const res = await fetch("/names/name");
+            const res = await fetch("/options/name");
             const options = await res.json();
 
             const select = document.getElementById("name");
@@ -156,6 +156,14 @@
         }
 
         async function submitShift() {
+
+            const selectedName = document.getElementById("name").value;
+
+            if (!selectedName) {
+                alert("名前を選択してください");
+                return;
+            }
+
             const shifts = [];
 
             for (let i = 0; i < 7; i++) {
